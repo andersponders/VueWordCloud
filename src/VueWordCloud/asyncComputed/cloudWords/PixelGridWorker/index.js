@@ -11,7 +11,7 @@ let construct = function(event) {
 	let _maxTopHeight;
 
 	let clear = function() {
-		_pixels = {};
+		_pixels = [];
 		_minLeft = 0;
 		_maxLeftWidth = 0;
 		_minTop = 0;
@@ -42,6 +42,7 @@ let construct = function(event) {
 			top: getTop(),
 			width: getWidth(),
 			height: getHeight(),
+			pixels: _pixels
 		};
 	};
 
@@ -49,10 +50,9 @@ let construct = function(event) {
 		pixels.forEach(([pixelLeft, pixelTop]) => {
 			let left = pixelsLeft + pixelLeft;
 			let top = pixelsTop + pixelTop;
-			_pixels[`${left}|${top}`] = true;
-			_minLeft = Math.min(left, _minLeft);
+			if (!_pixels[left]) _pixels[left] = [];
+			_pixels[left][top] = true;
 			_maxLeftWidth = Math.max(left + 1, _maxLeftWidth);
-			_minTop = Math.min(top, _minTop);
 			_maxTopHeight = Math.max(top + 1, _maxTopHeight);
 		});
 	};
@@ -61,12 +61,12 @@ let construct = function(event) {
 		return pixels.every(([pixelLeft, pixelTop]) => {
 			let left = pixelsLeft + pixelLeft;
 			let top = pixelsTop + pixelTop;
-			return !_pixels[`${left}|${top}`];
+			return !_pixels[left] || !_pixels[left][top];
 		});
 	};
 
 	let findFit = function(pixels, pixelsLeft, pixelsTop) {
-		return findPixel(_aspect, [pixelsLeft + getLeft(), pixelsTop + getTop()], ([pixelsLeft, pixelsTop]) => {
+		return findPixel(_aspect, [0, 0], ([pixelsLeft, pixelsTop]) => {
 			return canFit(pixels, pixelsLeft, pixelsTop);
 		});
 	};
