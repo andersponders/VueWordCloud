@@ -16,7 +16,6 @@ export default {
 	plugins: [
 		stringify(),
 		resolve(),
-		buble({objectAssign: 'Object.assign'}),
-		uglify({mangle: {properties: {regex: /^ǂ/}}}),
+		buble({objectAssign: 'Object.assign'})
 	],
 };
