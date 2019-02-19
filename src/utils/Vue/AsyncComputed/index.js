@@ -58,7 +58,6 @@ export default function(asyncComputed) {
 							currentValue = value;
 							this[prefixTrigger + key] = {};
 						})
-						.catch(errorHandler);
 				};
 			});
 		},

@@ -210,6 +210,22 @@ export default {
 								return Worker_postMessage(gridWorker, elementAspect);
 							})
 							.then(() => {
+								let currentWord = words[0];
+								currentWord.ǂpadding = spacing;
+								return Worker_postMessage(gridWorker, {
+									name: 'findFit',
+									args: [currentWord.ǂimagePixels, currentWord.ǂimageLeft, currentWord.ǂimageTop],
+								});
+							})
+							.then(([imageLeft, imageTop]) => {
+								context.throwIfInterrupted();
+								let currentWord = words[0];
+								
+								currentWord.ǂimageLeft = imageLeft;
+								currentWord.ǂimageTop = imageTop;
+								currentWord.ǂpadding = 0;
+							})
+							.then(() => {
 								context.throwIfInterrupted();
 								process.completedWords++;
 
@@ -253,7 +269,7 @@ export default {
 										.then(([imageLeft, imageTop]) => {
 											context.throwIfInterrupted();
 											process.completedWords++;
-
+											
 											currentWord.ǂimageLeft = imageLeft;
 											currentWord.ǂimageTop = imageTop;
 											currentWord.ǂpadding = 0;
@@ -271,7 +287,9 @@ export default {
 							.then(() => {
 								return Worker_postMessage(gridWorker, {name: 'getBounds'});
 							})
-							.then(({left, top, width, height}) => {
+							.then(({left, top, width, height, pixels}) => {
+								console.log(pixels);
+								// window._pixels = pixels;
 								if (width > 0 && height > 0) {
 									let scaleFactor = Math.min(elementWidth / width, elementHeight / height);
 									words.forEach(word => {
@@ -320,6 +338,9 @@ export default {
 									};
 								});
 							})
+							.catch((e) => {
+								console.error(e);
+							})
 							.finally(() => {
 								gridWorker.terminate();
 							})
@@ -336,7 +357,7 @@ export default {
 		return [];
 	},
 	default: Function_stubArray,
-	/*errorHandler(error) {
+	errorHandler(error) {
 		console.warn(error);
-	},*/
+	}
 };
